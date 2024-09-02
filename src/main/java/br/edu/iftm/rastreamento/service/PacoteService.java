@@ -12,6 +12,7 @@ import br.edu.iftm.rastreamento.model.Pacote;
 import br.edu.iftm.rastreamento.model.Rastreamento;
 import br.edu.iftm.rastreamento.repository.PacoteRepository;
 import br.edu.iftm.rastreamento.repository.RastreamentoRepository;
+import br.edu.iftm.rastreamento.service.exceptions.NaoAcheiException;
 
 @Service
 public class PacoteService {
@@ -30,7 +31,8 @@ public class PacoteService {
     }
 
     public Pacote getPacoteById(Long id) {
-        return pacoteRepository.findById(id).get();
+        return pacoteRepository.findById(id).orElseThrow(() ->
+            new NaoAcheiException("Pacote com id '" + id + "' não encontrado"));
     }
 
     public Pacote createPacote(Pacote pacote) {
@@ -38,7 +40,8 @@ public class PacoteService {
     }
 
     public Pacote updatePacote(Long id, Pacote pacoteDetails) {
-        Pacote pacote = pacoteRepository.findById(id).get();
+        Pacote pacote = pacoteRepository.findById(id).orElseThrow(() ->
+        new NaoAcheiException("Pacote com id '" + id + "' não encontrado"));
         pacote.setId(id);
         pacote.atualizarStatus(pacoteDetails.getStatus(), Date.from(Instant.now()), "não implementado");
         //obter o ultimo rastreamento
@@ -51,4 +54,16 @@ public class PacoteService {
         Pacote pacote = pacoteRepository.findById(id).get();
         pacoteRepository.delete(pacote);
     }
+
+    public List<Pacote> getPacotesbyStatus(String status) {
+        return pacoteRepository.findByStatus(status);
+    }
+
+    public List<Pacote> getPacotesbyDestinatario(String destinatario) {
+        return pacoteRepository.findByDestinatario(destinatario);
+    }
+
+
+
+
 }
